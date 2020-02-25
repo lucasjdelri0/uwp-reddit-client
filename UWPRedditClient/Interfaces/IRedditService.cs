@@ -7,8 +7,8 @@ using UWPRedditClient.Entities;
 
 namespace UWPRedditClient.Interfaces
 {
-    public interface IAuthService
+    public interface IRedditService
     {
-        Task<AuthInfo> GetAuthInfo(string username, string password, string client_id, string client_secret);
+        Task<List<Post>> GetTopPosts(int limit);
     }
 }

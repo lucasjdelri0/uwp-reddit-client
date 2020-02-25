@@ -24,7 +24,7 @@ namespace UWPRedditClient.Services
         {
         }
 
-        public static IAuthService GetAuthenticationService()
+        public static IAuthService GetAuthService()
         {
             if (instance == null)
             {
@@ -40,11 +40,11 @@ namespace UWPRedditClient.Services
             return instance;
         }
 
-        public async Task<AuthInfo> Authenticate(string username, string password, string client_id, string client_secret)
+        public async Task<AuthInfo> GetAuthInfo(string username, string password, string client_id, string client_secret)
         {
             try
             {
-                AuthResponseInfo response = await GetToken(username, password, client_id, client_secret);
+                AuthResponseInfo response = await Authenticate(username, password, client_id, client_secret);
 
                 authInfo = new AuthInfo()
                 {
@@ -63,14 +63,12 @@ namespace UWPRedditClient.Services
             }
         }
 
-        private async Task<AuthResponseInfo> GetToken(string username, string password, string client_id, string client_secret)
+        private async Task<AuthResponseInfo> Authenticate(string username, string password, string client_id, string client_secret)
         {
             var url = $"{REDDIT_AUTH_URL}?grant_type=password&username={username}&password={password}";
-
             var byteArray = Encoding.ASCII.GetBytes($"{client_id}:{client_secret}");
 
             var client = new HttpClient();
-
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(("application/json")));
             client.DefaultRequestHeaders.Authorization =
@@ -80,12 +78,12 @@ namespace UWPRedditClient.Services
 
             if (response.IsSuccessStatusCode)
             {
-                var myJson = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<AuthResponseInfo>(myJson);
+                var stringResponse = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<AuthResponseInfo>(stringResponse);
             }
             else
             {
-                throw new HttpRequestException("Error requesting authentication token. Check your credentials.");
+                throw new HttpRequestException("[HttpRequestException]: Authenticate(): Request FAIL. Check your credentials.");
             }
 
         }
