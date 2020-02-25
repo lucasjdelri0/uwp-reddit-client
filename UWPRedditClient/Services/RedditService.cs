@@ -33,7 +33,7 @@ namespace UWPRedditClient.Services
             var url = $"/top?limit={limit}";
             var response = await _httpClient.GetAsync(url);
 
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 _lastRequest = DateTime.Now;
 
@@ -59,13 +59,15 @@ namespace UWPRedditClient.Services
             foreach (var post in myJson.data.children)
             {
                 postsList.Add(
-                    new Post(
-                        _subreddit: post.data.subreddit,
-                        _title: post.data.title,
-                        _author: post.data.author,
-                        _dtCreated: ConvertFromUnixTimestamp((int)post.data.created_utc),
-                        _numberOfComments: post.data.num_comments)
-                    );
+                    new Post()
+                    {
+                        subreddit = post.data.subreddit,
+                        title = post.data.title,
+                        author = post.data.author,
+                        dateTimeCreated = ConvertFromUnixTimestamp((int)post.data.created_utc),
+                        numberOfComments = post.data.num_comments
+                    }
+                );
             }
 
             return postsList;

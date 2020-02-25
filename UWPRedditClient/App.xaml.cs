@@ -48,6 +48,8 @@ namespace UWPRedditClient
 
             IRedditService redditService = new RedditService(authInfo);
             reddit_posts = await redditService.GetTopPosts(50);
+
+            Console.WriteLine($"Top 50 Posts: {reddit_posts}");
         }
 
         /// <summary>
