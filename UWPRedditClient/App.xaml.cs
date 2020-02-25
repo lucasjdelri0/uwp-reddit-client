@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using UWPRedditClient.Entities;
 using UWPRedditClient.Interfaces;
 using UWPRedditClient.Services;
 using Windows.ApplicationModel;
@@ -28,6 +29,7 @@ namespace UWPRedditClient
         private static readonly string REDDIT_PASSWORD = Environment.GetEnvironmentVariable("REDDIT_PASSWORD");
         private static readonly string REDDIT_CLIENT_ID = Environment.GetEnvironmentVariable("REDDIT_CLIENT_ID");
         private static readonly string REDDIT_CLIENT_SECRET = Environment.GetEnvironmentVariable("REDDIT_CLIENT_SECRET");
+        private static List<Post> reddit_posts { get; set; }
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -39,10 +41,13 @@ namespace UWPRedditClient
             this.Suspending += OnSuspending;
         }
 
-        public async void GetAuthInfo()
+        public async void Main()
         {
-            IAuthService authService = AuthService.GetAuthenticationService();
-            var authInfo = await authService.Authenticate(REDDIT_USER, REDDIT_PASSWORD, REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET);
+            IAuthService authService = AuthService.GetAuthService();
+            var authInfo = await authService.GetAuthInfo(REDDIT_USER, REDDIT_PASSWORD, REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET);
+
+            IRedditService redditService = new RedditService(authInfo);
+            reddit_posts = await redditService.GetTopPosts(50);
         }
 
         /// <summary>
@@ -52,7 +57,7 @@ namespace UWPRedditClient
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-            GetAuthInfo();
+            Main();
 
             Frame rootFrame = Window.Current.Content as Frame;
 
