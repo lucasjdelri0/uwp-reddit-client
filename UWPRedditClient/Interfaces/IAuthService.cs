@@ -9,6 +9,6 @@ namespace UWPRedditClient.Interfaces
 {
     public interface IAuthService
     {
-        Task<AuthInfo> Authenticate(string username, string password, string client_id, string client_secret);
+        Task<AuthInfo> GetAuthInfo(string username, string password, string client_id, string client_secret);
     }
 }
