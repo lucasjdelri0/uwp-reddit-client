@@ -8,7 +8,18 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
+    <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <TextBlock  x:Name="TitleTextBlock"
+                    Text="UWP Reddit Client"
+                    Margin="24,0,0,24" 
+                    Style="{StaticResource TitleTextBlockStyle}"/>
 
-    </Grid>
+        <GridView   x:Name="RedditPostsGridView"
+                    Margin="0,0,0,8"
+                    RelativePanel.AlignLeftWithPanel="True"
+                    RelativePanel.AlignRightWithPanel="True"
+                    RelativePanel.Below="TitleTextBlock"/>
+
+    </RelativePanel>
+
 </Page>
