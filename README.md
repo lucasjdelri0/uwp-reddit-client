@@ -18,8 +18,9 @@ Se propone una solución basada en el desarrollo de un Cliente UWP de Reddit que
 
 ### Datos de Interés
 -   Uso de patrón Master/Detail con visibilidad "Side-by-Side".
+-   Interfaz de Usuario responsiva frente a maximización o minimización.
 -   Animaciones sobre Interfaz de Usuario.
--   Adaptabilidad de títulos de acuerdo a longitud.
+-   Tratamiento de títulos de acuerdo a longitud.
 -   Consumo de API mediante HttpClient Class.
 -   Variables de Entorno como medio de almacenamiento y extracción de credenciales Reddit.
 

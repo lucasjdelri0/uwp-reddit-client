@@ -38,7 +38,7 @@ namespace UWPRedditClient.ViewModels
             itemViewModel.Title = post.title;
             itemViewModel.Author = post.author;
             itemViewModel.DateTimeCreated = post.dateTimeCreated;
-            itemViewModel.NumberOfComments = post.numberOfComments;
+            itemViewModel.NumberOfComments = post.numberOfComments + " comments";
             itemViewModel.Thumbnail = post.thumbnail;
             itemViewModel.MainPicture = post.mainPicture;
 

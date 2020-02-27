@@ -16,89 +16,99 @@
         </Page.Transitions>
 
         <Page.Resources>
-            
             <DataTemplate x:Key="MasterListViewItemTemplate" x:DataType="viewmodels:ItemViewModel">
-            <Grid Margin="0,11,0,13">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="20" />
-                    <RowDefinition Height="150" />
-                    <RowDefinition Height="30" />
-                </Grid.RowDefinitions>
+                <Grid Margin="0,11,0,13">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="150" />
+                        <RowDefinition Height="30" />
+                    </Grid.RowDefinitions>
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="140" />
-                    <ColumnDefinition Width="250" />
-                </Grid.ColumnDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="140" />
+                        <ColumnDefinition Width="250" />
+                    </Grid.ColumnDefinitions>
 
-                <TextBlock 
-                    Text="{x:Bind Author}" 
-                    VerticalAlignment="Center" 
-                    HorizontalAlignment="Center"
-                    Style="{ThemeResource BaseTextBlockStyle}" />
+                    <TextBlock 
+                        Text="{x:Bind Author}" 
+                        VerticalAlignment="Center" 
+                        HorizontalAlignment="Center"
+                        Style="{ThemeResource BaseTextBlockStyle}" />
 
-                <TextBlock
-                    Text="{x:Bind DateTimeCreated}"
-                    Grid.Column="1"
-                    VerticalAlignment="Center"
-                    Margin="10,0,0,0"
-                    Style="{ThemeResource BaseTextBlockStyle}" />
-
-                <Image Grid.Row="1">
-                    <Image.Source>
-                        <BitmapImage UriSource="{Binding Thumbnail}" />
-                    </Image.Source>
-                </Image>
-
-                <TextBlock
-                    Text="{x:Bind Title}"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Left"
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Margin="10,5,0,15"
-                    MaxLines="7"
-                    Style="{ThemeResource BaseTextBlockStyle}" />
-
-                <ToggleButton
-                    HorizontalAlignment="Center"
-                    Grid.Row="2"
-                    Content="Dismiss Post"/>
-
-                <TextBlock
-                    Text="{x:Bind NumberOfComments}"
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    Margin="10,0,0,5"
-                    MaxLines="1"
-                    Style="{ThemeResource BaseTextBlockStyle}" />
-
-            </Grid>
-        </DataTemplate>
-
-            <DataTemplate x:Key="DetailContentTemplate" x:DataType="viewmodels:ItemViewModel">
-                <StackPanel>
                     <TextBlock
-                        Margin="0,8"
-                        Style="{ThemeResource TitleTextBlockStyle}"
-                        HorizontalAlignment="Left"
-                        Text="{x:Bind Author}"/>
+                        Text="{x:Bind DateTimeCreated}"
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Margin="10,0,0,0"
+                        Style="{ThemeResource CaptionTextBlockStyle}" />
 
-                    <Image Margin="0,8">
+                    <Image Grid.Row="1">
                         <Image.Source>
                             <BitmapImage UriSource="{Binding Thumbnail}" />
                         </Image.Source>
                     </Image>
 
                     <TextBlock
-                        Margin="0,9"
+                        Text="{x:Bind Title}"
+                        VerticalAlignment="Center"
                         HorizontalAlignment="Left"
-                        MaxWidth="560"
-                        Style="{ThemeResource BodyTextBlockStyle}"
-                        Text="{x:Bind Title}" />
-            </StackPanel>
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="10,10,0,10"
+                        MaxLines="7"
+                        Style="{ThemeResource BodyTextBlockStyle}" />
+
+                    <ToggleButton
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        Grid.Row="2"
+                        Content="Dismiss Post"/>
+
+                    <TextBlock
+                        Text="{x:Bind NumberOfComments}"
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Margin="10,0,0,0"
+                        MaxLines="1"
+                        Style="{ThemeResource BaseTextBlockStyle}" />
+                </Grid>
             </DataTemplate>
+
+            <DataTemplate x:Key="DetailContentTemplate" x:DataType="viewmodels:ItemViewModel">
+            <Grid Margin="0,11,0,13">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    Margin="0,8"
+                    Style="{ThemeResource BaseTextBlockStyle}"
+                    HorizontalAlignment="Left"
+                    Text="{x:Bind Author}"/>
+
+                <Image Margin="0,8" Grid.Row="1">
+                    <Image.Source>
+                        <BitmapImage UriSource="{Binding Thumbnail}" />
+                    </Image.Source>
+                </Image>
+
+                <TextBlock
+                    Grid.Row="2"
+                    Margin="0,9"
+                    HorizontalAlignment="Left"
+                    MaxWidth="560"
+                    Style="{ThemeResource BodyTextBlockStyle}"
+                    Text="{x:Bind Title}" />
+            </Grid>
+        </DataTemplate>
         </Page.Resources>
 
         <Grid x:Name="LayoutRoot" Loaded="LayoutRoot_Loaded">
@@ -142,11 +152,19 @@
         <ListView
                 x:Name="MasterListView"
                 Grid.Row="1"
-                ItemTemplate="{StaticResource MasterListViewItemTemplate}"
-                ItemsSource="{x:Bind Items, Mode=TwoWay}">
+                ItemsSource="{x:Bind Items, Mode=TwoWay}"
+                IsItemClickEnabled="True"
+                ItemClick="MasterListView_ItemClick"
+                ItemContainerTransitions="{x:Null}"
+                ItemTemplate="{StaticResource MasterListViewItemTemplate}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ListView.ItemContainerStyle>
         </ListView>
 
-            <ContentPresenter
+        <ContentPresenter
                 x:Name="DetailContentPresenter"
                 Grid.Column="1"
                 Grid.RowSpan="2"
@@ -155,10 +173,7 @@
                 BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
                 Content="{x:Bind MasterListView.SelectedItem, Mode=OneWay}"
                 ContentTemplate="{StaticResource DetailContentTemplate}">
-                    <ContentPresenter.ContentTransitions>
-                        <!-- Empty by default. See MasterListView_ItemClick -->
-                        <TransitionCollection />
-                    </ContentPresenter.ContentTransitions>
-            </ContentPresenter>
+
+        </ContentPresenter>
         </Grid>
     </Page>
