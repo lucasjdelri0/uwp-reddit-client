@@ -3,23 +3,162 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:UWPRedditClient"
+    xmlns:viewmodels="using:UWPRedditClient.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock  x:Name="TitleTextBlock"
-                    Text="UWP Reddit Client"
-                    Margin="24,0,0,24" 
-                    Style="{StaticResource TitleTextBlockStyle}"/>
+        <Page.Transitions>
+            <TransitionCollection>
+                <NavigationThemeTransition />
+            </TransitionCollection>
+        </Page.Transitions>
 
-        <GridView   x:Name="RedditPostsGridView"
-                    Margin="0,0,0,8"
-                    RelativePanel.AlignLeftWithPanel="True"
-                    RelativePanel.AlignRightWithPanel="True"
-                    RelativePanel.Below="TitleTextBlock"/>
+        <Page.Resources>
+            
+            <DataTemplate x:Key="MasterListViewItemTemplate" x:DataType="viewmodels:ItemViewModel">
+            <Grid Margin="0,11,0,13">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20" />
+                    <RowDefinition Height="150" />
+                    <RowDefinition Height="30" />
+                </Grid.RowDefinitions>
 
-    </RelativePanel>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="140" />
+                    <ColumnDefinition Width="250" />
+                </Grid.ColumnDefinitions>
 
-</Page>
+                <TextBlock 
+                    Text="{x:Bind Author}" 
+                    VerticalAlignment="Center" 
+                    HorizontalAlignment="Center"
+                    Style="{ThemeResource BaseTextBlockStyle}" />
+
+                <TextBlock
+                    Text="{x:Bind DateTimeCreated}"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Margin="10,0,0,0"
+                    Style="{ThemeResource BaseTextBlockStyle}" />
+
+                <Image Grid.Row="1">
+                    <Image.Source>
+                        <BitmapImage UriSource="{Binding Thumbnail}" />
+                    </Image.Source>
+                </Image>
+
+                <TextBlock
+                    Text="{x:Bind Title}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Left"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="10,5,0,15"
+                    MaxLines="7"
+                    Style="{ThemeResource BaseTextBlockStyle}" />
+
+                <ToggleButton
+                    HorizontalAlignment="Center"
+                    Grid.Row="2"
+                    Content="Dismiss Post"/>
+
+                <TextBlock
+                    Text="{x:Bind NumberOfComments}"
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Margin="10,0,0,5"
+                    MaxLines="1"
+                    Style="{ThemeResource BaseTextBlockStyle}" />
+
+            </Grid>
+        </DataTemplate>
+
+            <DataTemplate x:Key="DetailContentTemplate" x:DataType="viewmodels:ItemViewModel">
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,8"
+                        Style="{ThemeResource TitleTextBlockStyle}"
+                        HorizontalAlignment="Left"
+                        Text="{x:Bind Author}"/>
+
+                    <Image Margin="0,8">
+                        <Image.Source>
+                            <BitmapImage UriSource="{Binding Thumbnail}" />
+                        </Image.Source>
+                    </Image>
+
+                    <TextBlock
+                        Margin="0,9"
+                        HorizontalAlignment="Left"
+                        MaxWidth="560"
+                        Style="{ThemeResource BodyTextBlockStyle}"
+                        Text="{x:Bind Title}" />
+            </StackPanel>
+            </DataTemplate>
+        </Page.Resources>
+
+        <Grid x:Name="LayoutRoot" Loaded="LayoutRoot_Loaded">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="AdaptiveStates" CurrentStateChanged="AdaptiveStates_CurrentStateChanged">
+                    <VisualState x:Name="DefaultState">
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="720" />
+                        </VisualState.StateTriggers>
+                    </VisualState>
+
+                    <VisualState x:Name="NarrowState">
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="0" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="MasterColumn.Width" Value="*" />
+                            <Setter Target="DetailColumn.Width" Value="0" />
+                            <Setter Target="MasterListView.SelectionMode" Value="None" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="MasterColumn" Width="420" />
+                <ColumnDefinition x:Name="DetailColumn" Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock
+                Text="Reddit Posts"
+                Margin="12,8,8,8"
+                HorizontalAlignment="Center"
+                Style="{ThemeResource TitleTextBlockStyle}" />
+
+        <ListView
+                x:Name="MasterListView"
+                Grid.Row="1"
+                ItemTemplate="{StaticResource MasterListViewItemTemplate}"
+                ItemsSource="{x:Bind Items, Mode=TwoWay}">
+        </ListView>
+
+            <ContentPresenter
+                x:Name="DetailContentPresenter"
+                Grid.Column="1"
+                Grid.RowSpan="2"
+                BorderThickness="1,0,0,0"
+                Padding="24,0"
+                BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                Content="{x:Bind MasterListView.SelectedItem, Mode=OneWay}"
+                ContentTemplate="{StaticResource DetailContentTemplate}">
+                    <ContentPresenter.ContentTransitions>
+                        <!-- Empty by default. See MasterListView_ItemClick -->
+                        <TransitionCollection />
+                    </ContentPresenter.ContentTransitions>
+            </ContentPresenter>
+        </Grid>
+    </Page>

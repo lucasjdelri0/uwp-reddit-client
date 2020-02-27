@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -15,7 +13,6 @@ namespace UWPRedditClient.Services
     {
         private static volatile AuthService instance;
         private static object syncRoot = new Object();
-
         private AuthInfo authInfo;
         private static readonly string REDDIT_AUTH_URL = "https://www.reddit.com/api/v1/access_token";
         private static readonly string REDDIT_BASE_URL = "https://oauth.reddit.com";
@@ -58,8 +55,7 @@ namespace UWPRedditClient.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                return new AuthInfo();
+                throw e;
             }
         }
 
@@ -69,6 +65,7 @@ namespace UWPRedditClient.Services
             var byteArray = Encoding.ASCII.GetBytes($"{client_id}:{client_secret}");
 
             var client = new HttpClient();
+
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(("application/json")));
             client.DefaultRequestHeaders.Authorization =
@@ -85,7 +82,6 @@ namespace UWPRedditClient.Services
             {
                 throw new HttpRequestException("[HttpRequestException]: Authenticate(): Request FAIL. Check your credentials.");
             }
-
         }
 
     }

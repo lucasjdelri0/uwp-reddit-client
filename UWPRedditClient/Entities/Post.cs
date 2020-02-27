@@ -9,10 +9,13 @@ namespace UWPRedditClient.Entities
 {
     public class Post
     {
-        public string subreddit { get; set; }
-        public string title { get; set; }
+        public int id { get; set; }
         public string author { get; set; }
+        public string title { get; set; }
+        public string subreddit { get; set; }
         public DateTime dateTimeCreated { get; set; }
         public string numberOfComments { get; set; }
+        public string thumbnail { get; set; }
+        public string mainPicture { get; set; }
     }
 }
