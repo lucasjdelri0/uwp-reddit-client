@@ -43,7 +43,6 @@ namespace UWPRedditClient
             }
             if (e.Parameter != null)
             {
-                // Parameter is the ItemId
                 var id = (int)e.Parameter;
                 _lastSelectedPost = Items.Where((post) => post.PostId == id).FirstOrDefault();
             }

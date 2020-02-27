@@ -45,7 +45,6 @@ namespace UWPRedditClient
         {
             base.OnNavigatedTo(e);
 
-            // Parameter is the ItemId
             Item = MainPage.Current.GetPostById((int)e.Parameter);
 
             var backStack = Frame.BackStack;
@@ -106,13 +105,10 @@ namespace UWPRedditClient
         {
             if (ShouldGoToWideState())
             {
-                // We shouldn't see this page since we are in "wide master-detail" mode.
-                // Play a transition as we are navigating from a separate page.
                 NavigateBackForWideState(useTransition: true);
             }
             else
             {
-                // Realize the main page content.
                 FindName("RootPanel");
             }
 
@@ -128,19 +124,14 @@ namespace UWPRedditClient
         {
             if (ShouldGoToWideState())
             {
-                // Make sure we are no longer listening to window change events.
                 Window.Current.SizeChanged -= Window_SizeChanged;
-
-                // We shouldn't see this page since we are in "wide master-detail" mode.
                 NavigateBackForWideState(useTransition: false);
             }
         }
 
         private void DetailPage_BackRequested(object sender, BackRequestedEventArgs e)
         {
-            // Mark event as handled so we don't get bounced out of the app.
             e.Handled = true;
-
             OnBackRequested();
         }
     }
