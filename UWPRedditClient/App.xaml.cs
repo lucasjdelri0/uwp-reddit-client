@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using UWPRedditClient.Entities;
 using UWPRedditClient.Interfaces;
 using UWPRedditClient.Services;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace UWPRedditClient
@@ -29,7 +21,6 @@ namespace UWPRedditClient
         private static readonly string REDDIT_PASSWORD = Environment.GetEnvironmentVariable("REDDIT_PASSWORD");
         private static readonly string REDDIT_CLIENT_ID = Environment.GetEnvironmentVariable("REDDIT_CLIENT_ID");
         private static readonly string REDDIT_CLIENT_SECRET = Environment.GetEnvironmentVariable("REDDIT_CLIENT_SECRET");
-        private static List<Post> reddit_posts { get; set; }
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -41,26 +32,17 @@ namespace UWPRedditClient
             this.Suspending += OnSuspending;
         }
 
-        public async void Main()
+        public async Task<List<Post>> Main()
         {
             IAuthService authService = AuthService.GetAuthService();
             var authInfo = await authService.GetAuthInfo(REDDIT_USER, REDDIT_PASSWORD, REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET);
 
             IRedditService redditService = new RedditService(authInfo);
-            reddit_posts = await redditService.GetTopPosts(50);
-
-            Console.WriteLine($"Top 50 Posts: {reddit_posts}");
+            return await redditService.GetTopPostsByLimit(50);
         }
 
-        /// <summary>
-        /// Invoked when the application is launched normally by the end user.  Other entry points
-        /// will be used such as when the application is launched to open a specific file.
-        /// </summary>
-        /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-            Main();
-
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,
@@ -69,30 +51,22 @@ namespace UWPRedditClient
             {
                 // Create a Frame to act as the navigation context and navigate to the first page
                 rootFrame = new Frame();
+                // Set the default language
+                rootFrame.Language = Windows.Globalization.ApplicationLanguages.Languages[0];
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+                if (rootFrame.Content == null)
                 {
-                    //TODO: Load state from previously suspended application
+                    rootFrame.Navigate(typeof(MainPage));
                 }
 
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
             }
 
-            if (e.PrelaunchActivated == false)
-            {
-                if (rootFrame.Content == null)
-                {
-                    // When the navigation stack isn't restored navigate to the first page,
-                    // configuring the new page by passing required information as a navigation
-                    // parameter
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
-                }
-                // Ensure the current window is active
-                Window.Current.Activate();
-            }
+            // Ensure the current window is active
+            Window.Current.Activate();
         }
 
         /// <summary>
