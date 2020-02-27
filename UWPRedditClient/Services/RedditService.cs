@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using UWPRedditClient.Entities;
 using UWPRedditClient.Interfaces;
@@ -28,7 +27,7 @@ namespace UWPRedditClient.Services
             _httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("uwp-reddit-client", "v1"));
         }
 
-        public async Task<List<Post>> GetTopPosts(int limit)
+        public async Task<List<Post>> GetTopPostsByLimit(int limit)
         {
             var url = $"/top?limit={limit}";
             var response = await _httpClient.GetAsync(url);
@@ -39,7 +38,7 @@ namespace UWPRedditClient.Services
 
                 var stringResponse = await response.Content.ReadAsStringAsync();
 
-                List<Post> posts = GetPosts(stringResponse);
+                List<Post> posts = GetTopPosts(stringResponse);
 
                 return posts;
             }
@@ -49,25 +48,31 @@ namespace UWPRedditClient.Services
             }
         }
 
-        private List<Post> GetPosts(string response)
+        private List<Post> GetTopPosts(string response)
         {
-            //JsonConvert.DeserializeObject<List<PostResponseInfo>>(stringResponse);
             var myJson = JsonConvert.DeserializeObject<dynamic>(response);
 
             var postsList = new List<Post>();
+            
+            int initialSize = postsList.Count();
 
             foreach (var post in myJson.data.children)
             {
                 postsList.Add(
                     new Post()
                     {
-                        subreddit = post.data.subreddit,
-                        title = post.data.title,
+                        id = initialSize,
                         author = post.data.author,
+                        title = post.data.title,
+                        subreddit = post.data.subreddit,
                         dateTimeCreated = ConvertFromUnixTimestamp((int)post.data.created_utc),
-                        numberOfComments = post.data.num_comments
+                        numberOfComments = post.data.num_comments,
+                        thumbnail = post.data.thumbnail,
+                        mainPicture = post.data.url
                     }
                 );
+
+                initialSize++;
             }
 
             return postsList;

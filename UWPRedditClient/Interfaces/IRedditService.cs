@@ -9,6 +9,6 @@ namespace UWPRedditClient.Interfaces
 {
     public interface IRedditService
     {
-        Task<List<Post>> GetTopPosts(int limit);
+        Task<List<Post>> GetTopPostsByLimit(int limit);
     }
 }
